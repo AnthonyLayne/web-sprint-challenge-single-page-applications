@@ -17,7 +17,6 @@ const App = () => {
         </Route>
         <Route exact path="/pizza">
           <OrderForm />
-          <h2>Let's build a tasty pizza!</h2>
         </Route>
       </Switch>
     </div>
