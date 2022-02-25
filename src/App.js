@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Switch, Route, Link } from "react-router-dom";
 import OrderForm from "./components/OrderForm";
 
 const App = () => {
+  const [orders, setOrders] = useState([]);
+
+  const orderSubmit = (newOrder) => {
+    setOrders([...orders, newOrder]);
+  };
+
+  useEffect(() => {
+    console.log(orders);
+  }, [orders]);
+
   return (
     <div className="App">
       <header>
@@ -16,7 +26,7 @@ const App = () => {
           <p>You can remove this code and create your own header</p>
         </Route>
         <Route exact path="/pizza">
-          <OrderForm />
+          <OrderForm orderSubmit={orderSubmit} />
         </Route>
       </Switch>
     </div>

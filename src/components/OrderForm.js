@@ -1,25 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-const OrderForm = () => {
-  const { topping } = useParams();
+const defaultForm = {
+  name: "",
+  accepted: false,
+  pepperoni: false,
+  cheese: false,
+  mushrooms: false,
+  onions: false,
+};
 
-  const [form, setForm] = useState({
-    name: "",
-    accepted: false,
-    pepperoni: false,
-    cheese: false,
-    mushrooms: false,
-    onions: false,
-  });
+const OrderForm = (props) => {
+  const { orderSubmit } = props;
+
+  const [form, setForm] = useState(defaultForm);
   const formChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
+
+    setForm({ ...form, [e.target.name]: value });
   };
+
+  const submitForm = (e) => {
+    e.prevenDefault();
+    orderSubmit(form);
+    setForm(defaultForm);
+  };
+
+  useEffect(() => {}, [form]);
 
   return (
     <article>
       <h2>Let's build a tasty pizza!</h2>
-      <form>
+      <form onSubmit={submitForm}>
         <label>
           Enter your name here:
           <input
