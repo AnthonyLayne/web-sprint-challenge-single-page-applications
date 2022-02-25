@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+
 import * as yup from "yup";
 
 const defaultForm = {
@@ -14,13 +14,15 @@ const defaultForm = {
 const OrderForm = (props) => {
   const formSchema = yup.object().shape({
     name: yup.string().min(2, "name must be at least 2 characters"),
+    pepperoni: yup.boolean().oneOf([true]),
+    cheese: yup.boolean().oneOf([true]),
+    mushrooms: yup.boolean().oneOf([true]),
+    onions: yup.boolean().oneOf([true]),
   });
 
-  const [error, setError] = useState({
-    name: "",
-  });
+  const [error, setError] = useState(defaultForm);
 
-  const [disabled, setDiabled] = useState(true);
+  const [disabled, setDisabled] = useState(true);
 
   const { orderSubmit } = props;
 
@@ -40,10 +42,11 @@ const OrderForm = (props) => {
   };
 
   const formChange = (e) => {
+    console.log(formChange);
     formValid(e);
+
     const value =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
-
     setForm({ ...form, [e.target.name]: value });
   };
 
@@ -55,7 +58,7 @@ const OrderForm = (props) => {
 
   useEffect(() => {
     formSchema.isValid(form).then((valid) => {
-      setDiabled(!valid);
+      setDisabled(!valid);
     });
   }, [form]);
 
@@ -116,6 +119,10 @@ const OrderForm = (props) => {
             name="onions"
             checked={form.onions}
           />
+        </label>
+        <label>
+          Special Instructions
+          <input type="text" name="special" id="special-text" />
         </label>
         <label>
           Submit Order:
