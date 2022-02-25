@@ -72,7 +72,15 @@ const OrderForm = (props) => {
             id="name-input"
           />
         </label>
-
+        <label>
+          Pie Size
+          <select name="pie" id="size-dropdown">
+            <option value="small">10" pie</option>
+            <option value="medium">12" pie</option>
+            <option value="large">15" pie</option>
+            <option value="extra-large">18" pie</option>
+          </select>
+        </label>
         <label>
           Pepperoni
           <input
