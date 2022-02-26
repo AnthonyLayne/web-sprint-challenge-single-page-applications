@@ -1,67 +1,67 @@
 import React, { useState, useEffect } from "react";
-
 import * as yup from "yup";
 
-const defaultForm = {
+import "./OrderForm.css";
+
+const PIZZA_SIZES = [
+  { value: "small", displayName: '10" pie' },
+  { value: "medium", displayName: '12" pie' },
+  { value: "large", displayName: '15" pie' },
+  { value: "extra-large", displayName: '18" pie' },
+];
+
+const DEFAULT_FORM = {
   name: "",
   accepted: false,
   pepperoni: false,
   cheese: false,
   mushrooms: false,
   onions: false,
+  specialInstructions: "",
 };
 
-const OrderForm = (props) => {
-  const formSchema = yup.object().shape({
-    name: yup.string().min(2, "name must be at least 2 characters"),
-    pepperoni: yup.boolean().oneOf([true]),
-    cheese: yup.boolean().oneOf([true]),
-    mushrooms: yup.boolean().oneOf([true]),
-    onions: yup.boolean().oneOf([true]),
-  });
+const formSchema = yup.object().shape({
+  name: yup.string().min(2, "name must be at least 2 characters"),
+  pepperoni: yup.boolean().oneOf([true, false]),
+  cheese: yup.boolean().oneOf([true, false]),
+  mushrooms: yup.boolean().oneOf([true, false]),
+  onions: yup.boolean().oneOf([true, false]),
+});
 
-  const [error, setError] = useState(defaultForm);
+const getTargetVal = (e) => (e.target.type === "checkbox" ? e.target.checked : e.target.value);
 
+const OrderForm = ({ orderSubmit }) => {
+  const [formState, setFormState] = useState(DEFAULT_FORM);
+  const [errorState, setErrorState] = useState(DEFAULT_FORM);
   const [disabled, setDisabled] = useState(true);
 
-  const { orderSubmit } = props;
-
-  const [form, setForm] = useState(defaultForm);
-
-  const formValid = (e) => {
+  const validateForm = (e) => {
     yup
       .reach(formSchema, e.target.name)
-      .validate(e.target.name)
-      .then(() => {
-        setError({ ...error, [e.target.name]: "" });
-      })
-
-      .catch((error) => {
-        setError({ ...error, [e.target.name]: error.errors[0] });
-      });
+      .validate(getTargetVal(e)) // "on" | "off"
+      .then(() => setErrorState((prev) => ({ ...prev, [e.target.name]: "" })))
+      .catch((error) => setErrorState((prev) => ({ ...prev, [e.target.name]: error.errors[0] })));
   };
 
-  const formChange = (e) => {
-    console.log(formChange);
-    formValid(e);
+  const handleFormChange = (e) => {
+    if (e.target.name !== "specialInstructions") {
+      validateForm(e);
+    }
 
-    const value =
-      e.target.type === "checkbox" ? e.target.checked : e.target.value;
-    setForm({ ...form, [e.target.name]: value });
+    setFormState((prev) => ({ ...prev, [e.target.name]: getTargetVal(e) }));
   };
 
   const submitForm = (e) => {
-    e.prevenDefault();
-    orderSubmit(form);
-    setForm(defaultForm);
+    e.preventDefault();
+    orderSubmit(formState);
+    setFormState(DEFAULT_FORM);
   };
 
   useEffect(() => {
-    formSchema.isValid(form).then((valid) => {
+    formSchema.isValid(formState).then((valid) => {
       setDisabled(!valid);
     });
-  }, [form]);
-
+  }, [formState]);
   return (
     <article>
       <h2>Let's build a tasty pizza!</h2>
@@ -69,67 +69,80 @@ const OrderForm = (props) => {
         <label>
           Enter your name here:
           <input
-            onChange={formChange}
+            className={errorState.name ? "error" : undefined}
+            value={formState.name}
+            onChange={handleFormChange}
             type="text"
             name="name"
             id="name-input"
           />
+          <span>{errorState.name}</span>
         </label>
+
         <label>
           Pie Size
           <select name="pie" id="size-dropdown">
-            <option value="small">10" pie</option>
-            <option value="medium">12" pie</option>
-            <option value="large">15" pie</option>
-            <option value="extra-large">18" pie</option>
+            {PIZZA_SIZES.map(({ value, displayName }) => (
+              <option key={value} value={value}>
+                {displayName}
+              </option>
+            ))}
           </select>
         </label>
+
         <label>
           Pepperoni
           <input
-            onChange={formChange}
+            onChange={handleFormChange}
             type="checkbox"
             name="pepperoni"
-            checked={form.pepperoni}
+            checked={formState.pepperoni}
           />
         </label>
+
         <label>
           Extra Cheese
           <input
-            onChange={formChange}
+            onChange={handleFormChange}
             type="checkbox"
             name="cheese"
-            checked={form.cheese}
+            checked={formState.cheese}
           />
         </label>
+
         <label>
           Mushrooms
           <input
-            onChange={formChange}
+            onChange={handleFormChange}
             type="checkbox"
             name="mushrooms"
-            checked={form.mushrooms}
+            checked={formState.mushrooms}
           />
         </label>
+
         <label>
           Onions
           <input
-            onChange={formChange}
+            onChange={handleFormChange}
             type="checkbox"
             name="onions"
-            checked={form.onions}
+            checked={formState.onions}
           />
         </label>
+
         <label>
           Special Instructions
-          <input type="text" name="special" id="special-text" />
+          <input
+            type="text"
+            name="specialInstructions"
+            id="special-text"
+            value={formState.specialInstructions}
+            onChange={handleFormChange}
+          />
         </label>
-        <label>
-          Submit Order:
-          <input type="button" name="accepted" id="order-button" />
-        </label>
+
+        <input disabled={disabled} type="submit" id="order-button" value="Submit Order" readOnly />
       </form>
-      <p>{error.name}</p>
     </article>
   );
 };

@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Switch, Route, Link } from "react-router-dom";
+
+// Components
 import OrderForm from "./components/OrderForm";
 
-const App = () => {
-  const [orders, setOrders] = useState([]);
+import "./App.css";
 
-  const orderSubmit = (newOrder) => {
-    setOrders([...orders, newOrder]);
-  };
+const App = () => {
+  const [ordersState, setOrdersState] = useState([]);
+
+  const orderSubmit = (newOrder) => setOrdersState((prev) => [...prev, newOrder]);
 
   useEffect(() => {
-    console.log(orders);
-  }, [orders]);
+    console.log(ordersState);
+  }, [ordersState]);
 
   return (
     <div className="App">
@@ -20,11 +22,13 @@ const App = () => {
 
         <Link to="/pizza">Pizza</Link>
       </header>
+
       <Switch>
         <Route exact path="/">
           <h1>Lambda Eats</h1>
-          <p>You can remove this code and create your own header</p>
+          <p>Let's Eat Pizza!</p>
         </Route>
+
         <Route exact path="/pizza">
           <OrderForm orderSubmit={orderSubmit} />
         </Route>
