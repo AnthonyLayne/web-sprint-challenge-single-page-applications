@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import * as yup from "yup";
-import axios from "axios";
 
 import "./OrderForm.css";
 
-const PIZZA_SIZES = [
+const pizzaSizes = [
   { value: "small", displayName: '10" pie' },
   { value: "medium", displayName: '12" pie' },
   { value: "large", displayName: '15" pie' },
@@ -45,7 +44,7 @@ const OrderForm = ({ orderSubmit }) => {
   const validateForm = (e) => {
     yup
       .reach(formSchema, e.target.name)
-      .validate(getTargetVal(e)) // "on" | "off"
+      .validate(getTargetVal(e))
       .then(() => setErrorState((prev) => ({ ...prev, [e.target.name]: "" })))
       .catch((error) => setErrorState((prev) => ({ ...prev, [e.target.name]: error.errors[0] })));
   };
@@ -60,13 +59,6 @@ const OrderForm = ({ orderSubmit }) => {
 
   const submitForm = (e) => {
     e.preventDefault();
-
-    // const orderLog1 = orderSubmit(formState); // WRONG
-    // const orderLog0 = await orderSubmit(formState); // ASYNC/AWAIT Version
-    // const orderLog2 = orderSubmit(formState).then((res) => res); // .THEN Version
-    // const orderLog2 = orderSubmit(formState).then((res) => { // Expanded .THEN Version
-    //   return res;
-    // });
 
     return orderSubmit(formState)
       .then((res) => {
@@ -101,7 +93,7 @@ const OrderForm = ({ orderSubmit }) => {
         <label>
           Pie Size
           <select name="pie" id="size-dropdown">
-            {PIZZA_SIZES.map(({ value, displayName }) => (
+            {pizzaSizes.map(({ value, displayName }) => (
               <option key={value} value={value}>
                 {displayName}
               </option>

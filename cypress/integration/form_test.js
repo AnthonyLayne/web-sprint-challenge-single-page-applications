@@ -2,7 +2,7 @@ describe("Form", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/pizza");
   });
-  const nameInput = () => cy.get("input[type=text]");
+  const nameInput = () => cy.get("#name-input");
   const pepperoniInput = () => cy.get("input[type=text]");
   const cheeseInput = () => cy.get("input[type=text]");
 
@@ -17,6 +17,6 @@ describe("Form", () => {
   });
 
   it("checks if you can type in boxes", () => {
-    textInput().should("have.value", "").type("It works!").should("have.value", "It works!");
+    nameInput.should("have.value", "").type("Anthony").should("have.value", "Anthony");
   });
 });
