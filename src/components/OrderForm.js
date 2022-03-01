@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as yup from "yup";
+import axios from "axios";
 
 import "./OrderForm.css";
 
@@ -17,7 +18,7 @@ const DEFAULT_FORM = {
   cheese: false,
   mushrooms: false,
   onions: false,
-  specialInstructions: "",
+  special: "",
 };
 
 const formSchema = yup.object().shape({
@@ -35,6 +36,12 @@ const OrderForm = ({ orderSubmit }) => {
   const [errorState, setErrorState] = useState(DEFAULT_FORM);
   const [disabled, setDisabled] = useState(true);
 
+  useEffect(() => {
+    formSchema.isValid(formState).then((valid) => {
+      setDisabled(!valid);
+    });
+  }, [formState]);
+
   const validateForm = (e) => {
     yup
       .reach(formSchema, e.target.name)
@@ -44,7 +51,7 @@ const OrderForm = ({ orderSubmit }) => {
   };
 
   const handleFormChange = (e) => {
-    if (e.target.name !== "specialInstructions") {
+    if (e.target.name !== "special") {
       validateForm(e);
     }
 
@@ -53,19 +60,31 @@ const OrderForm = ({ orderSubmit }) => {
 
   const submitForm = (e) => {
     e.preventDefault();
-    orderSubmit(formState);
-    setFormState(DEFAULT_FORM);
+
+    // const orderLog1 = orderSubmit(formState); // WRONG
+    // const orderLog0 = await orderSubmit(formState); // ASYNC/AWAIT Version
+    // const orderLog2 = orderSubmit(formState).then((res) => res); // .THEN Version
+    // const orderLog2 = orderSubmit(formState).then((res) => { // Expanded .THEN Version
+    //   return res;
+    // });
+
+    return orderSubmit(formState)
+      .then((res) => {
+        console.log(res);
+        return res;
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        setFormState(DEFAULT_FORM);
+      });
   };
 
-  useEffect(() => {
-    formSchema.isValid(formState).then((valid) => {
-      setDisabled(!valid);
-    });
-  }, [formState]);
   return (
     <article>
       <h2>Let's build a tasty pizza!</h2>
-      <form onSubmit={submitForm}>
+      <form onSubmit={submitForm} id="pizza-form">
         <label>
           Enter your name here:
           <input
@@ -131,12 +150,12 @@ const OrderForm = ({ orderSubmit }) => {
         </label>
 
         <label>
-          Special Instructions
+          Here are the special instructions
           <input
             type="text"
-            name="specialInstructions"
+            name="special"
             id="special-text"
-            value={formState.specialInstructions}
+            value={formState.special}
             onChange={handleFormChange}
           />
         </label>
