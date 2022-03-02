@@ -5,10 +5,10 @@ import OrderForm from "./components/OrderForm";
 
 import "./App.css";
 
-const orderEndpoint = "https://reqres.in/api/orders";
+const ORDER_ENDPOINT = "https://reqres.in/api/orders";
 
 const App = () => {
-  const orderSubmit = (newOrder) => axios.post("https://reqres.in/api/orders", newOrder);
+  const orderSubmit = (newOrder) => axios.post(ORDER_ENDPOINT, newOrder);
 
   return (
     <div className="App">
